@@ -110,7 +110,7 @@ repositories:
   sensor_component/ros2_socketcan:
     type: git
     url: https://github.com/autowarefoundation/ros2_socketcan
-    version: feat/continental_fd
+    version: humble
   # sensor_kit
   sensor_kit/sample_sensor_kit_launch:
     type: git
@@ -149,7 +149,7 @@ repositories:
   carla/ros-bridge:
     type: git
     url: https://github.com/GoesM/carla-ros-bridge-humble.git
-    version: master
+    version: main
   carla/astuff_sensor_msgs:
     type: git
     url: https://github.com/astuff/astuff_sensor_msgs.git
@@ -157,7 +157,7 @@ repositories:
   carla/carla_autoware_bridge:
     type: git
     url: https://github.com/GoesM/carla_autoware_bridge-humble.git
-    version: master
+    version: main
   carla/carla_tesla_model3_description:
     type: git
     url: https://github.com/Robotics010/carla_tesla_model3_description.git
