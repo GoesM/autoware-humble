@@ -19,6 +19,12 @@ rosdep install -y --from-paths src --ignore-src --rosdistro humble
 ```
 
 ### step 4. colcon build
+colcon for common usage
+```shell
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+```
+
+colcon for debug:
 ```shell
 export CC=gcc
 export CXX=g++

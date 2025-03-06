@@ -10,7 +10,8 @@
 build/
 install/
 log/
-/src/
+#/src/
+src/**.git/**
 
 # Python
 *.pyc
