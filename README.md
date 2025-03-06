@@ -1,7 +1,7 @@
 # install & setup
 ### step 1. download
 ```sh
-git clone https://github.com/GoesM/autoware.universe-humble
+git clone https://github.com/GoesM/autoware-humble
 ```
  
 ### step 2. download sub-git-repos
