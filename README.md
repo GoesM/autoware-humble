@@ -3,16 +3,10 @@
 ```sh
 git clone https://github.com/GoesM/autoware-humble
 ```
- 
-### step 2. download sub-git-repos
-```sh
-cd autoware-humble
-mkdir src
-vcs import src < autoware.repos
-```
 
 ### step 3. rosdep install
 ```sh
+cd autoware-humble
 sudo apt-get update && sudo apt-get upgrade
 rosdep update
 rosdep install -y --from-paths src --ignore-src --rosdistro humble

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
+  <arg name="data_path" default="$(env HOME)/autoware_data" description="packages data and artifacts directory path"/>
+
   <!-- Essential parameters -->
   <arg name="map_path" description="point cloud and lanelet2 map directory path"/>
   <arg name="vehicle_model" description="vehicle model name"/>
@@ -42,7 +44,7 @@
 
   <!-- Global parameters -->
   <group scoped="false">
-    <include file="$(find-pkg-share global_parameter_loader)/launch/global_params.launch.py">
+    <include file="$(find-pkg-share autoware_global_parameter_loader)/launch/global_params.launch.py">
       <arg name="use_sim_time" value="$(var use_sim_time)"/>
       <arg name="vehicle_model" value="$(var vehicle_model)"/>
     </include>
@@ -72,12 +74,44 @@
       <arg name="run_mode" value="$(var system_run_mode)"/>
       <arg name="launch_system_monitor" value="$(var launch_system_monitor)"/>
       <arg name="sensor_model" value="$(var sensor_model)"/>
+
+      <!-- Addition by GoesM START-->
+        <arg name="component_state_monitor_topic_path" value="$(find-pkg-share autoware_launch)/config/system/component_state_monitor/topics.yaml"/>
+        <arg name="duplicated_node_checker_param_path" value="$(find-pkg-share autoware_launch)/config/system/duplicated_node_checker/duplicated_node_checker.param.yaml"/>
+        <arg name="processing_time_checker_param_path" value="$(find-pkg-share autoware_launch)/config/system/processing_time_checker/processing_time_checker.param.yaml"/>
+        <arg name="mrm_comfortable_stop_operator_param_path" value="$(find-pkg-share autoware_launch)/config/system/mrm_comfortable_stop_operator/mrm_comfortable_stop_operator.param.yaml"/>
+        <arg name="mrm_emergency_stop_operator_param_path" value="$(find-pkg-share autoware_launch)/config/system/mrm_emergency_stop_operator/mrm_emergency_stop_operator.param.yaml"/>
+        <arg name="dummy_diag_publisher_param_path" value="$(find-pkg-share autoware_launch)/config/system/diagnostics/dummy_diag_publisher.param.yaml"/>
+        <arg name="system_monitor_cpu_monitor_param_path" value="$(find-pkg-share autoware_launch)/config/system/system_monitor/cpu_monitor.param.yaml"/>
+        <arg name="system_monitor_gpu_monitor_param_path" value="$(find-pkg-share autoware_launch)/config/system/system_monitor/gpu_monitor.param.yaml"/>
+        <arg name="system_monitor_hdd_monitor_param_path" value="$(find-pkg-share autoware_launch)/config/system/system_monitor/hdd_monitor.param.yaml"/>
+        <arg name="system_monitor_mem_monitor_param_path" value="$(find-pkg-share autoware_launch)/config/system/system_monitor/mem_monitor.param.yaml"/>
+        <arg name="system_monitor_net_monitor_param_path" value="$(find-pkg-share autoware_launch)/config/system/system_monitor/net_monitor.param.yaml"/>
+        <arg name="system_monitor_ntp_monitor_param_path" value="$(find-pkg-share autoware_launch)/config/system/system_monitor/ntp_monitor.param.yaml"/>
+        <arg name="system_monitor_process_monitor_param_path" value="$(find-pkg-share autoware_launch)/config/system/system_monitor/process_monitor.param.yaml"/>
+        <arg name="system_monitor_voltage_monitor_param_path" value="$(find-pkg-share autoware_launch)/config/system/system_monitor/voltage_monitor.param.yaml"/>
+      
+        <arg name="launch_dummy_diag_publisher" value="true" />
+
+        <arg name="mrm_handler_param_path" value="$(find-pkg-share autoware_launch)/config/system/mrm_handler/mrm_handler.param.yaml"/>
+        <arg name="diagnostic_graph_aggregator_param_path" value="$(find-pkg-share autoware_diagnostic_graph_aggregator)/config/default.param.yaml"/>
+        <arg name="diagnostic_graph_aggregator_graph_path" value="$(find-pkg-share autoware_launch)/config/system/diagnostics/autoware-main.yaml"/>
+      <!-- Addition by GoesM END-->
+
     </include>
   </group>
 
   <!-- Map -->
   <group if="$(var launch_map)">
-    <include file="$(find-pkg-share tier4_map_launch)/launch/map.launch.py">
+    <include file="$(find-pkg-share tier4_map_launch)/launch/map.launch.xml">
+      <!-- Addition by GoesM START-->
+        <arg name="pointcloud_map_metadata_path" value="$(var map_path)/pointcloud_map_metadata.yaml"/>
+        <arg name="pointcloud_map_loader_param_path" value="$(find-pkg-share autoware_launch)/config/map/pointcloud_map_loader.param.yaml"/>
+        <arg name="lanelet2_map_loader_param_path" value="$(find-pkg-share autoware_launch)/config/map/lanelet2_map_loader.param.yaml"/>
+        <arg name="map_tf_generator_param_path" value="$(find-pkg-share autoware_launch)/config/map/map_tf_generator.param.yaml"/>
+        <arg name="map_projection_loader_param_path" value="$(find-pkg-share autoware_launch)/config/map/map_projection_loader.param.yaml"/>
+        <arg name="map_projector_info_path" value="$(var map_path)/map_projector_info.yaml"/>
+      <!-- Addition by GoesM END-->
       <arg name="lanelet2_map_path" value="$(var map_path)/$(var lanelet2_map_file)"/>
       <arg name="pointcloud_map_path" value="$(var map_path)/$(var pointcloud_map_file)"/>
     </include>
@@ -97,12 +131,157 @@
 
   <!-- Localization -->
   <group if="$(var launch_localization)">
+    <!-- Addition by GoesM START -->
+    <include file="$(find-pkg-share autoware_launch)/launch/components/tier4_localization_component.launch.xml"/>
+    <!-- Addition by GoesM END -->
+    <!-- Removed by GoesM
     <include file="$(find-pkg-share tier4_localization_launch)/launch/localization.launch.xml"/>
+    -->
   </group>
 
   <!-- Perception -->
   <group if="$(var launch_perception)">
     <include file="$(find-pkg-share tier4_perception_launch)/launch/perception.launch.xml">
+      <!-- Addition by GoesM START -->
+        <arg
+          name="object_recognition_detection_euclidean_cluster_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/clustering/euclidean_cluster.param.yaml"
+        />
+        <arg name="object_recognition_detection_outlier_param_path" value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/clustering/outlier.param.yaml"/>
+        <arg
+          name="object_recognition_detection_voxel_grid_based_euclidean_cluster_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/clustering/voxel_grid_based_euclidean_cluster.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_object_lanelet_filter_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/object_filter/object_lanelet_filter.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_object_position_filter_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/object_filter/object_position_filter.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_pointcloud_map_filter_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/pointcloud_filter/pointcloud_map_filter.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_fusion_sync_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/image_projection_based_fusion/fusion_common.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_roi_cluster_fusion_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/image_projection_based_fusion/roi_cluster_fusion.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_roi_pointcloud_fusion_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/image_projection_based_fusion/roi_pointcloud_fusion.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_roi_detected_object_fusion_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/image_projection_based_fusion/roi_detected_object_fusion.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_obstacle_pointcloud_based_validator_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/detected_object_validation/obstacle_pointcloud_based_validator.param.yaml"
+        />
+        <arg
+          name="object_recognition_prediction_map_based_prediction_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/prediction/map_based_prediction.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_object_merger_data_association_matrix_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/object_merger/data_association_matrix.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_object_merger_distance_threshold_list_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/object_merger/overlapped_judge.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_detection_by_tracker_param"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/detection_by_tracker/detection_by_tracker.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_radar_crossing_objects_noise_filter_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/radar_crossing_objects_noise_filter/radar_crossing_objects_noise_filter.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_radar_lanelet_filtering_range_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/object_filter/radar_lanelet_filter.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_radar_object_clustering_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/clustering/radar_object_clustering.param.yaml"
+        />
+        <arg name="object_recognition_detection_lidar_model_param_path" value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/lidar_model"/>
+        <arg
+          name="object_recognition_detection_object_velocity_splitter_radar_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/object_velocity_splitter/object_velocity_splitter_radar.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_object_velocity_splitter_radar_fusion_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/object_velocity_splitter/object_velocity_splitter_radar_fusion.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_object_range_splitter_radar_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/object_range_splitter/object_range_splitter_radar.param.yaml"
+        />
+        <arg
+          name="object_recognition_detection_object_range_splitter_radar_fusion_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/detection/object_range_splitter/object_range_splitter_radar_fusion.param.yaml"
+        />
+        <arg
+          name="object_recognition_tracking_multi_object_tracker_data_association_matrix_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/tracking/multi_object_tracker/data_association_matrix.param.yaml"
+        />
+        <arg
+          name="object_recognition_tracking_multi_object_tracker_input_channels_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/tracking/multi_object_tracker/input_channels.param.yaml"
+        />
+        <arg
+          name="object_recognition_tracking_multi_object_tracker_node_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/tracking/multi_object_tracker/multi_object_tracker_node.param.yaml"
+        />
+        <arg
+          name="object_recognition_tracking_radar_object_tracker_data_association_matrix_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/tracking/radar_object_tracker/data_association_matrix.param.yaml"
+        />
+        <arg
+          name="object_recognition_tracking_radar_object_tracker_tracking_setting_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/tracking/radar_object_tracker/default_tracker.param.yaml"
+        />
+        <arg
+          name="object_recognition_tracking_radar_object_tracker_node_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/tracking/radar_object_tracker/radar_object_tracker.param.yaml"
+        />
+        <arg
+          name="object_recognition_tracking_object_merger_data_association_matrix_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/tracking/tracking_object_merger/data_association_matrix.param.yaml"
+        />
+        <arg
+          name="object_recognition_tracking_object_merger_node_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/object_recognition/tracking/tracking_object_merger/decorative_tracker_merger.param.yaml"
+        />
+        <arg
+          name="obstacle_segmentation_ground_segmentation_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/obstacle_segmentation/ground_segmentation/ground_segmentation.param.yaml"
+        />
+        <arg
+          name="obstacle_segmentation_ground_segmentation_elevation_map_param_path"
+          value="$(find-pkg-share autoware_launch)/config/perception/obstacle_segmentation/ground_segmentation/elevation_map_parameters.yaml"
+        />
+
+        <arg name="occupancy_grid_map_method" value="pointcloud_based" />
+        <arg name="occupancy_grid_map_param_path" value="$(find-pkg-share autoware_launch)/config/perception/occupancy_grid_map/$(var occupancy_grid_map_method).param.yaml"/>
+        <arg name="occupancy_grid_map_updater" value="binary_bayes_filter" />
+        <arg name="occupancy_grid_map_updater_param_path" value="$(find-pkg-share autoware_launch)/config/perception/occupancy_grid_map/$(var occupancy_grid_map_updater)_updater.param.yaml"/>
+
+        <arg name="traffic_light_arbiter_param_path" value="$(find-pkg-share autoware_launch)/config/perception/traffic_light_arbiter/traffic_light_arbiter.param.yaml"/>
+        <arg name="traffic_light_fine_detector_model_name" value="tlr_car_ped_yolox_s_batch_6"/>
+        <arg name="car_traffic_light_classifier_model_name" value="traffic_light_classifier_mobilenetv2_batch_6"/>
+        <arg name="pedestrian_traffic_light_classifier_model_name" value="ped_traffic_light_classifier_mobilenetv2_batch_4"/>
+        
+        <arg name="lidar_detection_model" value="centerpoint" />
+      <!-- Addition by GoesM END -->
       <arg name="mode" value="lidar"/>
       <arg name="vehicle_param_file" value="$(find-pkg-share $(var vehicle_model)_description)/config/vehicle_info.param.yaml"/>
       <arg name="use_pointcloud_container" value="$(var use_pointcloud_container)"/>
@@ -113,10 +292,13 @@
 
   <!-- Planning -->
   <group if="$(var launch_planning)">
+    <include file="$(find-pkg-share autoware_launch)/launch/components/tier4_planning_component.launch.xml">
+    <!-- removed by GoesM
     <include file="$(find-pkg-share tier4_planning_launch)/launch/planning.launch.xml">
       <arg name="vehicle_info_param_file" value="$(find-pkg-share $(var vehicle_model)_description)/config/vehicle_info.param.yaml"/>
       <arg name="use_pointcloud_container" value="$(var use_pointcloud_container)"/>
       <arg name="pointcloud_container_name" value="$(var pointcloud_container_name)"/>
+    -->
     </include>
   </group>
 
